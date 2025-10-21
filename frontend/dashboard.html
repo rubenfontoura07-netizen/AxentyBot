@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>AxentyBot Dashboard</title>
+  <style>
+    body{font-family:Arial;background:#0f1724;color:#e6eef8;padding:20px}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{padding:8px;border:1px solid #223}
+    button{padding:8px 12px;margin-right:8px}
+    .controls{margin-bottom:12px}
+  </style>
+</head>
+<body>
+  <h1>AxentyBot - Dashboard</h1>
+  <div class="controls">
+    <button onclick="runBots()">Executar Robots</button>
+    <button onclick="loadBets()">Atualizar histórico</button>
+  </div>
+  <table id="betsTable">
+    <thead><tr><th>ID</th><th>Fixture</th><th>Market</th><th>Sel</th><th>Odd</th><th>Stake</th><th>EV</th><th>Result</th></tr></thead>
+    <tbody></tbody>
+  </table>
+<script>
+async function runBots(){
+  const r = await fetch('/runBots'); const j = await r.json(); alert(j.status || JSON.stringify(j));
+  await loadBets();
+}
+async function loadBets(){
+  const res = await fetch('/bets'); const bets = await res.json();
+  const tbody = document.querySelector('#betsTable tbody'); tbody.innerHTML='';
+  bets.forEach(b=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${b.id}</td><td>${b.home} v ${b.away}</td><td>${b.market}</td><td>${b.selection}</td><td>${b.odd}</td><td>${b.stake}</td><td>${(b.ev||0).toFixed(3)}</td><td>${b.result}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+loadBets();
+</script>
+</body>
+</html>
